@@ -8,10 +8,14 @@
     <Compile Include="..\AzureFunctions.NetCore\FunctionEnsureAllFiles.cs" Link="FunctionEnsureAllFiles.cs" />
     <Compile Include="..\AzureFunctions.NetCore\FunctionValidateFileSet.cs" Link="FunctionValidateFileSet.cs" />
     <Compile Include="..\AzureFunctions.NetCore\Helpers.cs" Link="Helpers.cs" />
-    <Compile Include="..\AzureFunctions.NetCore\LockTableEntity.cs" Link="LockTableEntity.cs" />
+    <Compile Include="..\AzureFunctions.NetCore\LockTableEntity.cs" Link="LockTableEntity.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\AzureFunctions.NetCore\local.settings.json" Link="local.settings.json" />
+    <None Include="..\AzureFunctions.NetCore\local.settings.json" Link="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.7" />
