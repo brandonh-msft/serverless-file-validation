@@ -1,13 +1,13 @@
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using Gatekeeper;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 
 namespace AzureFunctions.Durable
 {
@@ -36,7 +36,7 @@ namespace AzureFunctions.Durable
             }
 
             string customerName = newCustomerFile.CustomerName, name = newCustomerFile.Filename, containerName = newCustomerFile.ContainerName;
-            log.Info($@"Processing new file. customer: {customerName}, filename: {name}");
+            starter.Log(log, $@"Processing new file. customer: {customerName}, filename: {name}");
 
             // get the prefix for the name so we can check for others in the same container with in the customer blob storage account
             var prefix = newCustomerFile.BatchPrefix;
@@ -44,19 +44,19 @@ namespace AzureFunctions.Durable
             var instanceForPrefix = await starter.GetStatusAsync(prefix);
             if (instanceForPrefix == null)
             {
-                log.Info($@"New instance needed for prefix '{prefix}'. Starting...");
+                starter.Log(log, $@"New instance needed for prefix '{prefix}'. Starting...");
                 var retval = await starter.StartNewAsync(@"EnsureAllFiles", prefix, eventGridSoleItem);
-                log.Info($@"Started. {retval}");
+                starter.Log(log, $@"Started. {retval}");
             }
             else
             {
-                log.Info($@"Instance already waiting. Current status: {instanceForPrefix.RuntimeStatus}");
+                starter.Log(log, $@"Instance already waiting. Current status: {instanceForPrefix.RuntimeStatus}. Firing 'newfile' event...");
 
                 if (instanceForPrefix.RuntimeStatus == OrchestrationRuntimeStatus.Failed)
                 {
                     await starter.TerminateAsync(prefix, @"bounce");
                     var retval = await starter.StartNewAsync(@"EnsureAllFiles", prefix, eventGridSoleItem);
-                    log.Info($@"Restarted listener for {prefix}. {retval}");
+                    starter.Log(log, $@"Restarted listener for {prefix}. {retval}");
                 }
                 else
                 {

@@ -11,5 +11,7 @@ namespace Gatekeeper
                 log.Warning(messsage);
             }
         }
+
+        public static void Log(this Microsoft.Azure.WebJobs.DurableOrchestrationClient client, TraceWriter log, string messsage, bool onlyIfNotReplaying = true) => log.Warning(messsage);
     }
 }
