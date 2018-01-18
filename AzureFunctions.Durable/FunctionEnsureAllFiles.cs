@@ -16,11 +16,11 @@ namespace Gatekeeper
         {
             if (!context.IsReplaying)
             {
-                context.LogInfo(log, $@"EnsureAllFiles STARTING - InstanceId: {context.InstanceId}");
+                context.Log(log, $@"EnsureAllFiles STARTING - InstanceId: {context.InstanceId}");
             }
             else
             {
-                context.LogInfo(log, $@"EnsureAllFiles REPLAYING");
+                context.Log(log, $@"EnsureAllFiles REPLAYING");
             }
 
             dynamic eventGridSoleItem = context.GetInputAsJson();
@@ -37,16 +37,16 @@ namespace Gatekeeper
             while (expectedFiles.Any())
             {
                 expectedFiles.Remove(Path.GetFileNameWithoutExtension(filename).Split('_').Last());
-                if (expectedFiles.Count == 0) continue;
+                if (expectedFiles.Count == 0) break;
 
-                context.LogInfo(log, $@"Still waiting for more files... Still need {string.Join(", ", expectedFiles)} for customer {newCustomerFile.CustomerName}, batch {newCustomerFile.BatchPrefix}");
+                context.Log(log, $@"Still waiting for more files... Still need {string.Join(", ", expectedFiles)} for customer {newCustomerFile.CustomerName}, batch {newCustomerFile.BatchPrefix}");
 
                 filename = await context.WaitForExternalEvent<string>(@"newfile");
-                context.LogInfo(log, $@"Got new file via event: {filename}");
+                context.Log(log, $@"Got new file via event: {filename}");
             }
 
             // Verify that this prefix isn't already in the lock table for processings
-            context.LogInfo(log, @"Got all the files! Moving on...");
+            context.Log(log, @"Got all the files! Moving on...");
 
             using (var c = new HttpClient())
             {
