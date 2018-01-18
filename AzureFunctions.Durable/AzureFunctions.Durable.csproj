@@ -5,7 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\AzureFunctions.NetCore\CustomerBlobAttributes.cs" Link="CustomerBlobAttributes.cs" />
-    <Compile Include="..\AzureFunctions.NetCore\CustomerRequirementsClient.cs" Link="CustomerRequirementsClient.cs" />
     <Compile Include="..\AzureFunctions.NetCore\Extensions.cs" Link="Extensions.cs" />
     <Compile Include="..\AzureFunctions.NetCore\Helpers.cs" Link="Helpers.cs" />
     <Compile Include="..\AzureFunctions.NetCore\LockTableEntity.cs" Link="LockTableEntity.cs" />
