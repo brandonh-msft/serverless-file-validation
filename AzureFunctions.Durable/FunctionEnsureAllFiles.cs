@@ -64,7 +64,7 @@ $@"{{
         }
 
         [FunctionName(@"GetExpectedFilesForCustomer")]
-        public static IEnumerable<string> GetExpectedFilesForCustomer([ActivityTrigger]DurableActivityContext context, TraceWriter log) => new[] { @"file1", @"file2", @"file3", @"file4", @"file5", @"file6" };
+        public static IEnumerable<string> GetExpectedFilesForCustomer([ActivityTrigger]DurableActivityContext context, TraceWriter log) => new[] { @"type1", @"type2", @"type3", @"type4", @"type5", @"type6", @"type7", @"type8", @"type9", @"type10" };
 
         class BlobFilenameVsDatabaseFileMaskComparer : IEqualityComparer<string>
         {
