@@ -14,6 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFunctions.v1", "AzureFunctions\AzureFunctions.v1.csproj", "{E385BB87-8489-4390-BB72-26551B23E7E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionsV1", "FunctionsV1", "{F8CE7BED-6111-476F-A5AF-2562039E2091}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionsV2", "FunctionsV2", "{CFFE2BAD-8736-42FA-89FE-7774BF32588A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,9 +38,19 @@ Global
 		{E40FF2B2-9A11-4625-9781-D8CFB88A4361}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E40FF2B2-9A11-4625-9781-D8CFB88A4361}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E40FF2B2-9A11-4625-9781-D8CFB88A4361}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E385BB87-8489-4390-BB72-26551B23E7E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E385BB87-8489-4390-BB72-26551B23E7E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E385BB87-8489-4390-BB72-26551B23E7E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E385BB87-8489-4390-BB72-26551B23E7E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7F962FFE-00D7-435C-9AF5-C384BEB47C6E} = {CFFE2BAD-8736-42FA-89FE-7774BF32588A}
+		{74162D03-84FF-489C-8C59-96B3D8771500} = {CFFE2BAD-8736-42FA-89FE-7774BF32588A}
+		{E40FF2B2-9A11-4625-9781-D8CFB88A4361} = {F8CE7BED-6111-476F-A5AF-2562039E2091}
+		{E385BB87-8489-4390-BB72-26551B23E7E6} = {F8CE7BED-6111-476F-A5AF-2562039E2091}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {65B203C2-3EEE-4F9C-B4EB-AB8B67A71F67}

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\AzureFunctions.NetCore\CustomerBlobAttributes.cs" Link="CustomerBlobAttributes.cs" />
+    <Compile Include="..\AzureFunctions.NetCore\Extensions.cs" Link="Extensions.cs" />
+    <Compile Include="..\AzureFunctions.NetCore\FunctionEnsureAllFiles.cs" Link="FunctionEnsureAllFiles.cs" />
+    <Compile Include="..\AzureFunctions.NetCore\FunctionValidateFileSet.cs" Link="FunctionValidateFileSet.cs" />
+    <Compile Include="..\AzureFunctions.NetCore\Helpers.cs" Link="Helpers.cs" />
+    <Compile Include="..\AzureFunctions.NetCore\LockTableEntity.cs" Link="LockTableEntity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\AzureFunctions.NetCore\local.settings.json" Link="local.settings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
