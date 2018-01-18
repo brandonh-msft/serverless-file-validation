@@ -66,9 +66,14 @@ In the `EnsureAllFiles` sub-orchestration, we look up what files we need for thi
 
 When we find we have all the files that constitute a "batch" for the customer, we call the `ValidateFileSet` activity function to process each file in the set and validate the structure of them according to our rules.
 
+When Validation completes successfully, all files from the batch are moved to a `valid-set` subfolder in the blob storage container. If validation fails (try removing a column in one of the lines in one of the files), the whole set gets moved to `invalid-set`
+
 ### Resetting Execution
 Because of the persistent behavior of state for Durable Functions, if you need to reset the execution because something goes wrong it's not as simple as just re-running the function. To do this properly, you must **delete the `DurableFunctionsHubHistory` Table** in the "General Purpose" Storage Account you created in Step 1 above.
+
+If you are using the classic Functions (not the Durable ones), then to restart properly you must delete the `FileProcessingLocks` table from the General Purpose Storage Account.
 
 ## Known issues
 * If you drop all the files in at once, there exists a race condition when the events fired from Event Grid hit the top-level Orchestrator endpoint; it doesn't execute `StartNewAsync` fast enough and instead of one instance per batch, you'll end up with multiple instances even though we desire them to be singletons by batch.
 * If you drop one file in, then drop the remainder after the singleton has been spun up, you'll enter an infinite loop of execution. We're still working on debugging this.
+*

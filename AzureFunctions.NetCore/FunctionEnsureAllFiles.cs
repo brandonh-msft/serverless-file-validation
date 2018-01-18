@@ -62,7 +62,7 @@ namespace Gatekeeper
             {
                 // Verify that this prefix isn't already in the lock table for processings
                 var lockTable = await Helpers.GetLockTableAsync();
-                var entriesMatchingPrefix = LockTableEntity.GetLockRecordAsync(prefix, lockTable);
+                var entriesMatchingPrefix = await LockTableEntity.GetLockRecordAsync(prefix, lockTable);
                 if (entriesMatchingPrefix != null)
                 {
                     log.Info($@"Skipping. We've already queued the batch with prefix '{prefix}' for processing");

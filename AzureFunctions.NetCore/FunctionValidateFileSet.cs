@@ -61,6 +61,8 @@ namespace Gatekeeper
                 }
 
                 var lowerFileType = fileParts.Filetype.ToLowerInvariant();
+                log.Info($@"Validating {lowerFileType}...");
+
                 uint numColumns = 0;
                 switch (lowerFileType)
                 {
@@ -76,8 +78,6 @@ namespace Gatekeeper
                         numColumns = 4;
                         break;
                     case @"type9":  // itemdetail
-                        numColumns = 5;
-                        break;
                     case @"type3": // shipto
                         numColumns = 14;
                         break;

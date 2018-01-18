@@ -31,7 +31,15 @@ namespace AzureFunctions
                 throw new Exception($@"Error creating table client for locks: {ex}", ex);
             }
 
-            await bottlerFilesTable.CreateIfNotExistsAsync();
+            while (true)
+            {
+                try
+                {
+                    await bottlerFilesTable.CreateIfNotExistsAsync();
+                    break;
+                }
+                catch { }
+            }
 
             return bottlerFilesTable;
         }
