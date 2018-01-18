@@ -71,7 +71,11 @@ When Validation completes successfully, all files from the batch are moved to a 
 ### Resetting Execution
 Because of the persistent behavior of state for Durable Functions, if you need to reset the execution because something goes wrong it's not as simple as just re-running the function. To do this properly, you must **delete the `DurableFunctionsHubHistory` Table** in the "General Purpose" Storage Account you created in Step 1 above.
 
+**Note**: after doing this you'll have to wait a minute or so before running either of the Durable Function implementations as the storage table creation will error with 409 CONFLICT while deletion takes place.
+
 If you are using the classic Functions (not the Durable ones), then to restart properly you must delete the `FileProcessingLocks` table from the General Purpose Storage Account.
+
+In addition to either of the above steps, you'll also want to delete any files you uploaded to the `/inbound` directory of the blob storage container triggering the Functions.
 
 ## Known issues
 * If you drop all the files in at once, there exists a race condition when the events fired from Event Grid hit the top-level Orchestrator endpoint; it doesn't execute `StartNewAsync` fast enough and instead of one instance per batch, you'll end up with multiple instances even though we desire them to be singletons by batch.
