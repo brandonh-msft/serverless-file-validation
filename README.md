@@ -79,4 +79,4 @@ In addition to either of the above steps, you'll also want to delete any files y
 
 ## Known issues
 * If you drop all the files in at once, there exists a race condition when the events fired from Event Grid hit the top-level Orchestrator endpoint; it doesn't execute `StartNewAsync` fast enough and instead of one instance per batch, you'll end up with multiple instances even though we desire them to be singletons by batch.
-* If you drop one file in, then drop the remainder after the singleton has been spun up, you'll enter an infinite loop of execution. We're still working on debugging this.
+* If you drop one file in, then drop the remainder after the singleton has been spun up, you'll enter an infinite loop of execution. This is fixed by [a pull request](https://github.com/Azure/azure-functions-durable-extension/pull/144) which is slated to be in the beta3 release of the Durable Functions package.
