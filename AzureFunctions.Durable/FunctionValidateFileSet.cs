@@ -179,14 +179,6 @@ namespace Gatekeeper
             }
         }
 
-        private static async Task<IEnumerable<string>> ValidateMixedPackFile(ICloudBlob blob, TraceWriter log)
-        {
-            log.Info($@"Validating MixedPack file ({blob.Name})...");
-
-            var err = await ValidateCsvStructureAsync(blob, 3, @"Mixed Pack");
-            return err;
-        }
-
         private static async Task<IEnumerable<string>> ValidateCsvStructureAsync(ICloudBlob blob, uint requiredNumberOfColumnsPerLine, string filetypeDescription)
         {
             var errs = new List<string>();

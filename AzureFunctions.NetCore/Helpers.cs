@@ -9,7 +9,7 @@ namespace AzureFunctions
     {
         public static async System.Threading.Tasks.Task<CloudTable> GetLockTableAsync(CloudStorageAccount storageAccount = null)
         {
-            CloudTable bottlerFilesTable;
+            CloudTable customerFilesTable;
             if (storageAccount == null)
             {
                 if (!CloudStorageAccount.TryParse(Environment.GetEnvironmentVariable(@"AzureWebJobsStorage"), out var sa))
@@ -24,7 +24,7 @@ namespace AzureFunctions
 
             try
             {
-                bottlerFilesTable = storageAccount.CreateCloudTableClient().GetTableReference(@"FileProcessingLocks");
+                customerFilesTable = storageAccount.CreateCloudTableClient().GetTableReference(@"FileProcessingLocks");
             }
             catch (Exception ex)
             {
@@ -35,13 +35,13 @@ namespace AzureFunctions
             {
                 try
                 {
-                    await bottlerFilesTable.CreateIfNotExistsAsync();
+                    await customerFilesTable.CreateIfNotExistsAsync();
                     break;
                 }
                 catch { }
             }
 
-            return bottlerFilesTable;
+            return customerFilesTable;
         }
 
         public static CustomerBlobAttributes ParseEventGridPayload(dynamic eventGridItem, TraceWriter log)

@@ -41,24 +41,24 @@ namespace Gatekeeper
             Waiting, InProgress, Done
         }
 
-        public static async Task<LockTableEntity> GetLockRecordAsync(string filePrefix, CloudTable bottlerFilesTable = null, CloudStorageAccount bottlerFilesTableStorageAccount = null)
+        public static async Task<LockTableEntity> GetLockRecordAsync(string filePrefix, CloudTable customerFilesTable = null, CloudStorageAccount customerFilesTableStorageAccount = null)
         {
-            bottlerFilesTable = bottlerFilesTable ?? await Helpers.GetLockTableAsync(bottlerFilesTableStorageAccount);
+            customerFilesTable = customerFilesTable ?? await Helpers.GetLockTableAsync(customerFilesTableStorageAccount);
 
-            return (await bottlerFilesTable.ExecuteQueryAsync(
+            return (await customerFilesTable.ExecuteQueryAsync(
                 new TableQuery<LockTableEntity>()
                     .Where(TableQuery.GenerateFilterCondition(@"PartitionKey", QueryComparisons.Equal, filePrefix))))
                 .SingleOrDefault();
         }
 
-        public static async Task UpdateAsync(string filePrefix, BatchState state, CloudTable bottlerFilesTable = null, CloudStorageAccount bottlerFilesTableStorageAccount = null)
+        public static async Task UpdateAsync(string filePrefix, BatchState state, CloudTable customerFilesTable = null, CloudStorageAccount customerFilesTableStorageAccount = null)
         {
-            var entity = await GetLockRecordAsync(filePrefix, bottlerFilesTable);
+            var entity = await GetLockRecordAsync(filePrefix, customerFilesTable);
             entity.State = state;
 
-            bottlerFilesTable = bottlerFilesTable ?? await Helpers.GetLockTableAsync(bottlerFilesTableStorageAccount);
+            customerFilesTable = customerFilesTable ?? await Helpers.GetLockTableAsync(customerFilesTableStorageAccount);
 
-            await bottlerFilesTable.ExecuteAsync(TableOperation.Replace(entity));
+            await customerFilesTable.ExecuteAsync(TableOperation.Replace(entity));
         }
     }
 }

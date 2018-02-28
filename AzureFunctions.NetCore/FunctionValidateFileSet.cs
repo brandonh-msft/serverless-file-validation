@@ -1,4 +1,11 @@
-﻿using AzureFunctions;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using AzureFunctions;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -6,13 +13,6 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Gatekeeper
 {
@@ -198,14 +198,6 @@ namespace Gatekeeper
 #endif
                 }
             }
-        }
-
-        private static async Task<IEnumerable<string>> ValidateMixedPackFile(ICloudBlob blob, TraceWriter log)
-        {
-            log.Info($@"Validating MixedPack file ({blob.Name})...");
-
-            var err = await ValidateCsvStructureAsync(blob, 3, @"Mixed Pack");
-            return err;
         }
 
         private static async Task<IEnumerable<string>> ValidateCsvStructureAsync(ICloudBlob blob, uint requiredNumberOfColumnsPerLine, string filetypeDescription)
