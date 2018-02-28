@@ -15,12 +15,11 @@ To accomplish this sample, you'll need to set up a few things:
 1. Azure General Purpose Storage
     * For the Functions SDK to store its dashboard info, and the Durable Functions to store their state data
 1. Azure Blob Storage
-    * **In West US 2 or West Central US** region (due to #3)
     * For the customer files to be uploaded in to
 1. Azure Event Grid (with Storage Events)
 1. ngrok to enable local Azure Function triggering from Event Grid (see <a href="https://blogs.msdn.microsoft.com/brandonh/2017/11/30/locally-debugging-an-azure-function-triggered-by-azure-event-grid/" target="_blank">this blog post</a> for more)
-1. Visual Studio 2017 v15.5.4 with the **Azure Workload** installed.
-1. The *Azure Functions and Web Jobs Tools* extension to VS, version 15.0.40108
+1. Visual Studio 2017 v15.5.4+ with the **Azure Workload** installed.
+1. The *Azure Functions and Web Jobs Tools* extension to VS, version 15.0.40108+
 1. <a href="https://azure.microsoft.com/en-us/features/storage-explorer/" target="_blank">Azure Storage Explorer</a> (makes testing easier)
 
 ## Execution
