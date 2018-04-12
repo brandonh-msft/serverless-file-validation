@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
@@ -30,15 +29,16 @@ namespace FileValidation
                 return;
             }
 
-            var expectedFiles = new HashSet<string>(await context.CallActivityAsync<IEnumerable<string>>(nameof(GetExpectedFilesForCustomer), newCustomerFile.CustomerName));
+            var expectedFiles = await context.CallActivityAsync<IEnumerable<string>>(nameof(GetExpectedFilesForCustomer), newCustomerFile.CustomerName);
+            var filesStillWaitingFor = new HashSet<string>(expectedFiles);
             var filename = newCustomerFile.Filename;
 
-            while (expectedFiles.Any())
+            while (filesStillWaitingFor.Any())
             {
-                expectedFiles.Remove(Path.GetFileNameWithoutExtension(filename).Split('_').Last());
-                if (expectedFiles.Count == 0) break;
+                filesStillWaitingFor.Remove(Path.GetFileNameWithoutExtension(filename).Split('_').Last());
+                if (filesStillWaitingFor.Count == 0) break;
 
-                context.Log(log, $@"Still waiting for more files... Still need {string.Join(", ", expectedFiles)} for customer {newCustomerFile.CustomerName}, batch {newCustomerFile.BatchPrefix}");
+                context.Log(log, $@"Still waiting for more files... Still need {string.Join(", ", filesStillWaitingFor)} for customer {newCustomerFile.CustomerName}, batch {newCustomerFile.BatchPrefix}");
 
                 filename = await context.WaitForExternalEvent<string>(@"newfile");
                 context.Log(log, $@"Got new file via event: {filename}");
@@ -47,19 +47,8 @@ namespace FileValidation
             // Verify that this prefix isn't already in the lock table for processings
             context.Log(log, @"Got all the files! Moving on...");
 
-            using (var c = new HttpClient())
-            {
-                var jsonObjectForValidator =
-$@"{{
-    ""prefix"" : ""{newCustomerFile.ContainerName}/inbound/{newCustomerFile.BatchPrefix}"",
-    ""fileTypes"" : [
-        {string.Join(", ", expectedFiles.Select(e => $@"""{e}"""))}
-    ]
-}}";
-
-                // call next step in functions with the prefix so it knows what to go grab
-                await context.CallActivityAsync(@"ValidateFileSet", jsonObjectForValidator);
-            }
+            // call next step in functions with the prefix so it knows what to go grab
+            await context.CallActivityAsync(@"ValidateFileSet", new { prefix = $@"{newCustomerFile.ContainerName}/inbound/{newCustomerFile.BatchPrefix}", fileTypes = expectedFiles });
         }
 
         [FunctionName(@"GetExpectedFilesForCustomer")]
