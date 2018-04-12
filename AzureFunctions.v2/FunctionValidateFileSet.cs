@@ -162,6 +162,10 @@ namespace Gatekeeper
                     .GetDirectoryReference($@"{folderName}")
                     .GetBlockBlobReference(Path.GetFileName(blobRef.Name));
 
+                string sourceLeaseGuid = Guid.NewGuid().ToString(), targetLeaseGuid = Guid.NewGuid().ToString();
+                var sourceLeaseId = await sourceBlob.AcquireLeaseAsync(TimeSpan.FromSeconds(60), sourceLeaseGuid);
+                var targetLeaseId = await targetBlob.AcquireLeaseAsync(TimeSpan.FromSeconds(60), targetLeaseGuid);
+
                 await targetBlob.StartCopyAsync(sourceBlob);
 
                 while (targetBlob.CopyState.Status == CopyStatus.Pending) ;     // spinlock until the copy completes
@@ -196,6 +200,9 @@ namespace Gatekeeper
                         log.Error($@"Error deleting blob {sourceBlob.Name}", ex);
                     }
 #endif
+
+                    await targetBlob.ReleaseLeaseAsync(new AccessCondition { LeaseId = targetLeaseId });
+                    await sourceBlob.ReleaseLeaseAsync(new AccessCondition { LeaseId = sourceLeaseId });
                 }
             }
         }
