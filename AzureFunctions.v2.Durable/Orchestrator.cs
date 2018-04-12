@@ -51,7 +51,7 @@ namespace FileValidation
             {
                 starter.Log(log, $@"Instance already waiting. Current status: {instanceForPrefix.RuntimeStatus}. Firing 'newfile' event...");
 
-                if (instanceForPrefix.RuntimeStatus == OrchestrationRuntimeStatus.Failed)
+                if (instanceForPrefix.RuntimeStatus != OrchestrationRuntimeStatus.Running)
                 {
                     await starter.TerminateAsync(prefix, @"bounce");
                     var retval = await starter.StartNewAsync(@"EnsureAllFiles", prefix, eventGridSoleItem);
