@@ -1,13 +1,12 @@
-using AzureFunctions;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Host;
 
-namespace Gatekeeper
+namespace FileValidation
 {
     public static class FunctionEnsureAllFiles
     {

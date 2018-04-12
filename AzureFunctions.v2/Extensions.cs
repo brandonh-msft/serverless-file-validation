@@ -4,7 +4,7 @@ using System.Net.Http;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
 
-namespace Gatekeeper
+namespace FileValidation
 {
     static class StorageExtensions
     {

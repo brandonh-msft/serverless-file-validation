@@ -3,7 +3,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
-namespace AzureFunctions
+namespace FileValidation
 {
     static class Helpers
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Azure.WebJobs.Host;
 
-namespace Gatekeeper
+namespace FileValidation
 {
     static class DurableContextExtensions
     {
