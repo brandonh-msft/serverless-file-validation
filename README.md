@@ -26,7 +26,7 @@ To accomplish this sample, you'll need to set up a few things:
 
 Pull down the code.
 
-Create a new file in the `AzureFunctions.NetCore` **project** called `local.settings.json` with the following content:
+Create a new file in the `AzureFunctions.v2` **project** called `local.settings.json` with the following content:
 ```js
 {
   "IsEncrypted": false,
@@ -42,7 +42,7 @@ Create a new file in the `AzureFunctions.NetCore` **project** called `local.sett
 
 This file will be used across the functions, durable or otherwise.
 
-Next, run either of the Durable Function apps in this solution. You can use the v1 (.Net Framework) or the .Net Core version, it's only needed for Event Grid validation.
+Next, run either of the Durable Function apps in this solution. You can use the v1 (.Net Framework) or the v2 (.Net Core) version, it's only needed for Event Grid validation.
 With the function running, add an Event Grid Subscription to the Blob Storage account (from step 2), pointing to the ngrok-piped endpoint you created in step 4. The URL should look something like this: `https://b3252cc3.ngrok.io/api/Orchestrator`
 
 ![](https://brandonhmsdnblog.blob.core.windows.net/images/2018/01/17/s2018-01-17_14-59-32.png)
@@ -78,5 +78,4 @@ In addition to either of the above steps, you'll also want to delete any files y
 
 ## Known issues
 * If you drop all the files in at once, there exists a race condition when the events fired from Event Grid hit the top-level Orchestrator endpoint; it doesn't execute `StartNewAsync` fast enough and instead of one instance per batch, you'll end up with multiple instances even though we desire them to be singletons by batch.
-* If you drop one file in, then drop the remainder after the singleton has been spun up, you'll enter an infinite loop of execution. This is fixed by [a pull request](https://github.com/Azure/azure-functions-durable-extension/pull/144) which is slated to be in the beta3 release of the Durable Functions package.
 * The `400 BAD REQUEST` return if errors are found in the set suffers from [this bug](https://github.com/Azure/azure-functions-host/issues/2475) on the Functions v2 runtime as of this writing.
