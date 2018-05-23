@@ -88,6 +88,15 @@ When Validation completes successfully, all files from the batch are moved to a 
 
 **Note**: after doing these steps you'll have to wait a minute or so before running either of the Durable Function implementations as the storage table creation will error with 409 CONFLICT while deletion takes place.
 
+### Logic Apps
+While not identically behaved, this repo also contains deployment scripts for two Logic App instances which perform roughly the same flow.
+#### Batch Processor
+This LA gets Storage Events from event grid, pulls off the full prefix of the file (also containing the URL), and sends this on to...
+#### Batch Receiver
+This receives events from the Processor and waits for 3 containing the same prefix to arrive before sending the batch on to the next step (you can change this to be whatever you want after deployment)
+
 ## Known issues
-* [Durable Functions] If you drop all the files in at once, there exists a race condition when the events fired from Event Grid hit the top-level Orchestrator endpoint; it doesn't execute `StartNewAsync` fast enough and instead of one instance per batch, you'll end up with multiple instances for the same prefix (even though we desire one instance per, acting like a singleton).
+#### Functions (all up)
 * The `400 BAD REQUEST` return if errors are found in the set suffers from [this bug](https://github.com/Azure/azure-functions-host/issues/2475) on the Functions v2 runtime as of this writing.
+#### Durable Functions
+* If you drop all the files in at once, there exists a race condition when the events fired from Event Grid hit the top-level Orchestrator endpoint; it doesn't execute `StartNewAsync` fast enough and instead of one instance per batch, you'll end up with multiple instances for the same prefix (even though we desire one instance per, acting like a singleton).
