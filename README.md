@@ -77,5 +77,5 @@ If you are using the classic Functions (not the Durable ones), then to restart p
 In addition to either of the above steps, you'll also want to delete any files you uploaded to the `/inbound` directory of the blob storage container triggering the Functions.
 
 ## Known issues
-* If you drop all the files in at once, there exists a race condition when the events fired from Event Grid hit the top-level Orchestrator endpoint; it doesn't execute `StartNewAsync` fast enough and instead of one instance per batch, you'll end up with multiple instances even though we desire them to be singletons by batch.
+* [Durable Functions] If you drop all the files in at once, there exists a race condition when the events fired from Event Grid hit the top-level Orchestrator endpoint; it doesn't execute `StartNewAsync` fast enough and instead of one instance per batch, you'll end up with multiple instances for the same prefix (even though we desire one instance per, acting like a singleton).
 * The `400 BAD REQUEST` return if errors are found in the set suffers from [this bug](https://github.com/Azure/azure-functions-host/issues/2475) on the Functions v2 runtime as of this writing.
