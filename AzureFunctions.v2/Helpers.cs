@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
@@ -63,6 +64,31 @@ namespace FileValidation
                 catch (Exception ex)
                 {
                     log.Error(@"Error parsing Event Grid payload", ex);
+                }
+            }
+
+            return null;
+        }
+
+        public static CustomerBlobAttributes ParseEventGridPayload(dynamic eventGridItem, ILogger log)
+        {
+            if (eventGridItem.eventType == @"Microsoft.Storage.BlobCreated"
+                && eventGridItem.data.api == @"PutBlob"
+                && eventGridItem.data.contentType == @"text/csv")
+            {
+                try
+                {
+                    var retVal = CustomerBlobAttributes.Parse((string)eventGridItem.data.url);
+                    if (retVal != null && !retVal.ContainerName.Equals(retVal.CustomerName))
+                    {
+                        throw new ArgumentException($@"File '{retVal.Filename}' uploaded to container '{retVal.ContainerName}' doesn't have the right prefix: the first token in the filename ({retVal.CustomerName}) must be the customer name, which should match the container name", nameof(eventGridItem));
+                    }
+
+                    return retVal;
+                }
+                catch (Exception ex)
+                {
+                    log.LogError(@"Error parsing Event Grid payload", ex);
                 }
             }
 

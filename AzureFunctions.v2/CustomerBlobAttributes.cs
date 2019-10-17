@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace FileValidation
 {
-    class CustomerBlobAttributes
+    public class CustomerBlobAttributes
     {
         static readonly Regex blobUrlRegexExtract = new Regex(@"^\S*/([^/]+)/inbound/((([^_]+)_([\d]+_[\d]+))_([\w]+))\.csv$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 

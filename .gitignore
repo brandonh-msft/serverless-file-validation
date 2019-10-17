@@ -262,3 +262,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/AzureFunctions.v2.DurableEntities/Properties/PublishProfiles
