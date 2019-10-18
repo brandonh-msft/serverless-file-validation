@@ -3,14 +3,14 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace FileValidation
 {
     public static class FunctionEnsureAllFiles
     {
         [FunctionName("EnsureAllFiles")]
-        public static async Task Run([OrchestrationTrigger]DurableOrchestrationContext context, TraceWriter log)
+        public static async Task Run([OrchestrationTrigger]DurableOrchestrationContext context, ILogger log)
         {
             if (!context.IsReplaying)
             {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -15,9 +15,9 @@ namespace FileValidation
     public static class FunctionValidateFileSet
     {
         [FunctionName(@"ValidateFileSet")]
-        public static async Task<bool> Run([ActivityTrigger]DurableActivityContext context, TraceWriter log)
+        public static async Task<bool> Run([ActivityTrigger]DurableActivityContext context, ILogger log)
         {
-            log.Trace(new TraceEvent(System.Diagnostics.TraceLevel.Verbose, @"ValidateFileSet run."));
+            log.LogTrace(@"ValidateFileSet run.");
             if (!CloudStorageAccount.TryParse(Environment.GetEnvironmentVariable(@"CustomerBlobStorage"), out var storageAccount))
             {
                 throw new Exception(@"Can't create a storage account accessor from app setting connection string, sorry!");
@@ -25,10 +25,10 @@ namespace FileValidation
 
             var payload = context.GetInputAsJson();
             var prefix = payload["prefix"].ToString(); // This is the entire path w/ prefix for the file set
-            log.Trace(new TraceEvent(System.Diagnostics.TraceLevel.Verbose, $@"prefix: {prefix}"));
+            log.LogTrace($@"prefix: {prefix}");
 
             var filePrefix = prefix.Substring(prefix.LastIndexOf('/') + 1);
-            log.Trace(new TraceEvent(System.Diagnostics.TraceLevel.Verbose, $@"filePrefix: {filePrefix}"));
+            log.LogTrace($@"filePrefix: {filePrefix}");
 
             var blobClient = storageAccount.CreateCloudBlobClient();
             var targetBlobs = await blobClient.ListBlobsAsync(WebUtility.UrlDecode(prefix));
@@ -45,7 +45,7 @@ namespace FileValidation
                 var fileParts = CustomerBlobAttributes.Parse(blob.Uri.AbsolutePath);
                 if (!filesToProcess.Contains(fileParts.Filetype, StringComparer.OrdinalIgnoreCase))
                 {
-                    log.Verbose($@"{blob.Name} skipped. Isn't in the list of file types to process ({string.Join(", ", filesToProcess)}) for bottler '{customerName}'");
+                    log.LogTrace($@"{blob.Name} skipped. Isn't in the list of file types to process ({string.Join(", ", filesToProcess)}) for bottler '{customerName}'");
                     continue;
                 }
 
@@ -88,7 +88,7 @@ namespace FileValidation
 
             if (errors.Any())
             {
-                log.Error($@"Errors found in batch {filePrefix}: {string.Join(@", ", errors)}");
+                log.LogError($@"Errors found in batch {filePrefix}: {string.Join(@", ", errors)}");
 
                 // move files to 'invalid-set' folder
                 await MoveBlobsAsync(log, blobClient, targetBlobs, @"invalid-set");
@@ -99,12 +99,12 @@ namespace FileValidation
                 // move these files to 'valid-set' folder
                 await MoveBlobsAsync(log, blobClient, targetBlobs, @"valid-set");
 
-                log.Info($@"Set {filePrefix} successfully validated and queued for further processing.");
+                log.LogInformation($@"Set {filePrefix} successfully validated and queued for further processing.");
                 return true;
             }
         }
 
-        private static async Task<bool> ShouldProceedAsync(CloudTable bottlerFilesTable, string prefix, string filePrefix, TraceWriter log)
+        private static async Task<bool> ShouldProceedAsync(CloudTable bottlerFilesTable, string prefix, string filePrefix, ILogger log)
         {
             try
             {
@@ -118,18 +118,18 @@ namespace FileValidation
                 }
                 else
                 {
-                    log.Info($@"Validate for {prefix} skipped. State was {lockRecord?.State.ToString() ?? @"[null]"}.");
+                    log.LogInformation($@"Validate for {prefix} skipped. State was {lockRecord?.State.ToString() ?? @"[null]"}.");
                 }
             }
             catch (StorageException)
             {
-                log.Info($@"Validate for {prefix} skipped (StorageException. Somebody else picked it up already.");
+                log.LogInformation($@"Validate for {prefix} skipped (StorageException. Somebody else picked it up already.");
             }
 
             return false;
         }
 
-        private static async Task MoveBlobsAsync(TraceWriter log, CloudBlobClient blobClient, IEnumerable<IListBlobItem> targetBlobs, string folderName)
+        private static async Task MoveBlobsAsync(ILogger log, CloudBlobClient blobClient, IEnumerable<IListBlobItem> targetBlobs, string folderName)
         {
             foreach (var b in targetBlobs)
             {
@@ -147,7 +147,7 @@ namespace FileValidation
                 bool copySucceeded = targetBlob.CopyState.Status == CopyStatus.Success;
                 if (!copySucceeded)
                 {
-                    log.Error($@"Error copying {sourceBlob.Name} to {folderName} folder. Retrying once...");
+                    log.LogError($@"Error copying {sourceBlob.Name} to {folderName} folder. Retrying once...");
 
                     await targetBlob.StartCopyAsync(sourceBlob);
 
@@ -156,7 +156,7 @@ namespace FileValidation
                     copySucceeded = targetBlob.CopyState.Status == CopyStatus.Success;
                     if (!copySucceeded)
                     {
-                        log.Error($@"Error retrying copy of {sourceBlob.Name} to {folderName} folder. File not moved.");
+                        log.LogError($@"Error retrying copy of {sourceBlob.Name} to {folderName} folder. File not moved.");
                     }
                 }
 
@@ -171,7 +171,7 @@ namespace FileValidation
                     }
                     catch (StorageException ex)
                     {
-                        log.Error($@"Error deleting blob {sourceBlob.Name}", ex);
+                        log.LogError($@"Error deleting blob {sourceBlob.Name}", ex);
                     }
 #endif
                 }

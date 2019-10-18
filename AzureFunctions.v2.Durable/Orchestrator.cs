@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,7 +13,7 @@ namespace FileValidation
     public static class Orchestrator
     {
         [FunctionName("Orchestrator")]
-        public static async System.Threading.Tasks.Task<HttpResponseMessage> RunAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage req, [OrchestrationClient]DurableOrchestrationClient starter, TraceWriter log)
+        public static async System.Threading.Tasks.Task<HttpResponseMessage> RunAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage req, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log)
         {
             var inputToFunction = JToken.ReadFrom(new JsonTextReader(new StreamReader(await req.Content.ReadAsStreamAsync())));
             dynamic eventGridSoleItem = (inputToFunction as JArray)?.SingleOrDefault();
@@ -24,7 +24,7 @@ namespace FileValidation
 
             if (eventGridSoleItem.eventType == @"Microsoft.EventGrid.SubscriptionValidationEvent")
             {
-                log.Verbose(@"Event Grid Validation event received.");
+                log.LogTrace(@"Event Grid Validation event received.");
                 return req.CreateCompatibleResponse(HttpStatusCode.OK, $"{{ \"validationResponse\" : \"{((dynamic)inputToFunction)[0].data.validationCode}\" }}");
             }
 

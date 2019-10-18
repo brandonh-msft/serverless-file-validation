@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
@@ -18,7 +18,7 @@ namespace FileValidation
     public static class FunctionEnsureAllFiles
     {
         [FunctionName("EnsureAllFiles")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, @"post")]HttpRequestMessage req, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, @"post")]HttpRequestMessage req, ILogger log)
         {
             var payloadFromEventGrid = JToken.ReadFrom(new JsonTextReader(new StreamReader(await req.Content.ReadAsStreamAsync())));
             dynamic eventGridSoleItem = (payloadFromEventGrid as JArray)?.SingleOrDefault();
@@ -29,7 +29,7 @@ namespace FileValidation
 
             if (eventGridSoleItem.eventType == @"Microsoft.EventGrid.SubscriptionValidationEvent")
             {
-                log.Verbose(@"Event Grid Validation event received.");
+                log.LogTrace(@"Event Grid Validation event received.");
                 return new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent($"{{ \"validationResponse\" : \"{((dynamic)payloadFromEventGrid)[0].data.validationCode}\" }}")
@@ -64,18 +64,18 @@ namespace FileValidation
                 var entriesMatchingPrefix = await LockTableEntity.GetLockRecordAsync(prefix, lockTable);
                 if (entriesMatchingPrefix != null)
                 {
-                    log.Info($@"Skipping. We've already queued the batch with prefix '{prefix}' for processing");
+                    log.LogInformation($@"Skipping. We've already queued the batch with prefix '{prefix}' for processing");
                     return req.CreateResponse(HttpStatusCode.NoContent);
                 }
 
-                log.Info(@"Got all the files! Moving on...");
+                log.LogInformation(@"Got all the files! Moving on...");
                 try
                 {
                     await lockTable.ExecuteAsync(TableOperation.Insert(new LockTableEntity(prefix)));
                 }
                 catch (StorageException)
                 {
-                    log.Info($@"Skipping. We've already queued the batch with prefix '{prefix}' for processing");
+                    log.LogInformation($@"Skipping. We've already queued the batch with prefix '{prefix}' for processing");
                     return req.CreateResponse(HttpStatusCode.NoContent);
                 }
 
@@ -96,7 +96,7 @@ $@"{{
             }
             else
             {
-                log.Info($@"Still waiting for more files... Have {matches.Count()} file(s) from this customer ({newCustomerFile.CustomerName}) for batch {newCustomerFile.BatchPrefix}. Still need {string.Join(", ", filesStillWaitingFor)}");
+                log.LogInformation($@"Still waiting for more files... Have {matches.Count()} file(s) from this customer ({newCustomerFile.CustomerName}) for batch {newCustomerFile.BatchPrefix}. Still need {string.Join(", ", filesStillWaitingFor)}");
 
                 return req.CreateResponse(HttpStatusCode.NoContent);
             }
