@@ -1,14 +1,14 @@
-﻿using Microsoft.Azure.WebJobs;
-using Microsoft.Extensions.Logging;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Logging;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json;
 
 namespace FileValidation
 {
@@ -17,7 +17,6 @@ namespace FileValidation
     {
         private readonly string _id;
         private readonly ILogger _logger;
-        private static readonly string[] ExpectedFilesForCustomer = new[] { @"type1", @"type2", @"type3", @"type4", @"type5", @"type7", @"type8", @"type9", @"type10" };
 
         public BatchEntity(string id, ILogger logger)
         {
@@ -39,7 +38,7 @@ namespace FileValidation
 
             _logger.LogTrace($@"Actor '{_id}' got file '{newCustomerFile.Filetype}'");
 
-            var filesStillWaitingFor = ExpectedFilesForCustomer.Except(this.ReceivedFileTypes);
+            var filesStillWaitingFor = Helpers.GetExpectedFilesForCustomer().Except(this.ReceivedFileTypes);
             if (filesStillWaitingFor.Any())
             {
                 _logger.LogInformation($@"Still waiting for more files... Still need {string.Join(", ", filesStillWaitingFor)} for customer {newCustomerFile.CustomerName}, batch {newCustomerFile.BatchPrefix}");
@@ -72,15 +71,16 @@ namespace FileValidation
             var customerName = filePrefix.Split('_').First().Split('-').Last();
 
             var errors = new List<string>();
+            var expectedFiles = Helpers.GetExpectedFilesForCustomer();
 
             foreach (var blobDetails in targetBlobs)
             {
                 var blob = await blobClient.GetBlobReferenceFromServerAsync(blobDetails.StorageUri.PrimaryUri);
 
                 var fileParts = CustomerBlobAttributes.Parse(blob.Uri.AbsolutePath);
-                if (!ExpectedFilesForCustomer.Contains(fileParts.Filetype, StringComparer.OrdinalIgnoreCase))
+                if (!expectedFiles.Contains(fileParts.Filetype, StringComparer.OrdinalIgnoreCase))
                 {
-                    _logger.LogTrace($@"{blob.Name} skipped. Isn't in the list of file types to process ({string.Join(", ", ExpectedFilesForCustomer)}) for customer '{customerName}'");
+                    _logger.LogTrace($@"{blob.Name} skipped. Isn't in the list of file types to process ({string.Join(", ", expectedFiles)}) for customer '{customerName}'");
                     continue;
                 }
 

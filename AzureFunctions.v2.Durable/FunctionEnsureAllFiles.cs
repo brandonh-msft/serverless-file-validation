@@ -29,7 +29,7 @@ namespace FileValidation
                 return;
             }
 
-            var expectedFiles = await context.CallActivityAsync<IEnumerable<string>>(nameof(GetExpectedFilesForCustomer), newCustomerFile.CustomerName);
+            var expectedFiles = Helpers.GetExpectedFilesForCustomer();
             var filesStillWaitingFor = new HashSet<string>(expectedFiles);
             var filename = newCustomerFile.Filename;
 
@@ -50,9 +50,6 @@ namespace FileValidation
             // call next step in functions with the prefix so it knows what to go grab
             await context.CallActivityAsync(@"ValidateFileSet", new { prefix = $@"{newCustomerFile.ContainerName}/inbound/{newCustomerFile.BatchPrefix}", fileTypes = expectedFiles });
         }
-
-        [FunctionName(@"GetExpectedFilesForCustomer")]
-        public static IEnumerable<string> GetExpectedFilesForCustomer([ActivityTrigger]DurableActivityContext context, TraceWriter log) => new[] { @"type1", @"type2", @"type3", @"type4", @"type5", @"type7", @"type8", @"type9", @"type10" };
 
         class BlobFilenameVsDatabaseFileMaskComparer : IEqualityComparer<string>
         {

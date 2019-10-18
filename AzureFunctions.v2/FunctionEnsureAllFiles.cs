@@ -54,7 +54,7 @@ namespace FileValidation
             var matches = await blobClient.ListBlobsAsync(prefix: $@"{newCustomerFile.ContainerName}/inbound/{prefix}");
             var matchNames = matches.Select(m => Path.GetFileNameWithoutExtension(blobClient.GetBlobReferenceFromServerAsync(m.StorageUri.PrimaryUri).GetAwaiter().GetResult().Name).Split('_').Last()).ToList();
 
-            IEnumerable<string> expectedFiles = new[] { @"type1", @"type2", @"type3", @"type4", @"type5", @"type7", @"type8", @"type9", @"type10" };
+            var expectedFiles = Helpers.GetExpectedFilesForCustomer();
             var filesStillWaitingFor = expectedFiles.Except(matchNames, new BlobFilenameVsDatabaseFileMaskComparer());
 
             if (!filesStillWaitingFor.Any())

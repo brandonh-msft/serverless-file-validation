@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
+using System.Collections.Generic;
 
 namespace FileValidation
 {
@@ -95,5 +96,6 @@ namespace FileValidation
             return null;
         }
 
+        public static IEnumerable<string> GetExpectedFilesForCustomer() => new[] { @"type1", @"type2", @"type3", @"type4", @"type5", @"type7", @"type8", @"type9", @"type10" };
     }
 }
