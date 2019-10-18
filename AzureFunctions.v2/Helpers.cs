@@ -172,7 +172,7 @@ namespace FileValidation
                 {
                     var fileAttributes = CustomerBlobAttributes.Parse(blob.Uri.AbsolutePath);
 
-                    for (int lineNumber = 0; !blobReader.EndOfStream; lineNumber++)
+                    for (var lineNumber = 0; !blobReader.EndOfStream; lineNumber++)
                     {
                         var errorPrefix = $@"{filetypeDescription} file '{fileAttributes.Filename}' Record {lineNumber}";
                         var line = blobReader.ReadLine();
@@ -183,7 +183,7 @@ namespace FileValidation
                             continue;
                         }
 
-                        for (int i = 0; i < fields.Length; i++)
+                        for (var i = 0; i < fields.Length; i++)
                         {
                             errorPrefix = $@"{errorPrefix} Field {i}";
                             var field = fields[i];
@@ -217,7 +217,10 @@ namespace FileValidation
             {
                 // Ignore
             }
-            else throw storEx;
+            else
+            {
+                throw storEx;
+            }
         }
 
         public static async Task MoveBlobsAsync(CloudBlobClient blobClient, IEnumerable<IListBlobItem> targetBlobs, string folderName, ILogger logger = null)
@@ -236,16 +239,22 @@ namespace FileValidation
 
                 await targetBlob.StartCopyAsync(sourceBlob);
 
-                while (targetBlob.CopyState.Status == CopyStatus.Pending) ;     // spinlock until the copy completes
+                while (targetBlob.CopyState.Status == CopyStatus.Pending)
+                {
+                    ;     // spinlock until the copy completes
+                }
 
-                bool copySucceeded = targetBlob.CopyState.Status == CopyStatus.Success;
+                var copySucceeded = targetBlob.CopyState.Status == CopyStatus.Success;
                 if (!copySucceeded)
                 {
                     logger?.LogError($@"Error copying {sourceBlob.Name} to {folderName} folder. Retrying once...");
 
                     await targetBlob.StartCopyAsync(sourceBlob);
 
-                    while (targetBlob.CopyState.Status == CopyStatus.Pending) ;     // spinlock until the copy completes
+                    while (targetBlob.CopyState.Status == CopyStatus.Pending)
+                    {
+                        ;     // spinlock until the copy completes
+                    }
 
                     copySucceeded = targetBlob.CopyState.Status == CopyStatus.Success;
                     if (!copySucceeded)

@@ -36,7 +36,10 @@ namespace FileValidation
             while (filesStillWaitingFor.Any())
             {
                 filesStillWaitingFor.Remove(Path.GetFileNameWithoutExtension(filename).Split('_').Last());
-                if (filesStillWaitingFor.Count == 0) break;
+                if (filesStillWaitingFor.Count == 0)
+                {
+                    break;
+                }
 
                 context.Log(log, $@"Still waiting for more files... Still need {string.Join(", ", filesStillWaitingFor)} for customer {newCustomerFile.CustomerName}, batch {newCustomerFile.BatchPrefix}");
 

@@ -15,7 +15,7 @@ namespace FileValidation
         [IgnoreProperty]
         public string Prefix
         {
-            get { return this.PartitionKey; }
+            get => this.PartitionKey;
             set
             {
                 this.PartitionKey = value;
@@ -29,10 +29,7 @@ namespace FileValidation
         public string DbState
         {
             get => this.State.ToString();
-            set
-            {
-                this.State = (BatchState)Enum.Parse(typeof(BatchState), value);
-            }
+            set => this.State = (BatchState)Enum.Parse(typeof(BatchState), value);
         }
 
         public enum BatchState

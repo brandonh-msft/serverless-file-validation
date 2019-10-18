@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -15,7 +14,7 @@ namespace FileValidation
             }
         }
 
-        public static void Log(this DurableOrchestrationClient client, ILogger log, string messsage, bool onlyIfNotReplaying = true) => log.LogWarning(messsage);
+        public static void Log(this DurableOrchestrationClient _, ILogger log, string messsage) => log.LogWarning(messsage);
 
         public static JToken GetInputAsJson(this DurableActivityContextBase ctx) => ctx.GetInput<JToken>();
 

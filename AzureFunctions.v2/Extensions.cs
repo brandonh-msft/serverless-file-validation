@@ -41,8 +41,8 @@ namespace FileValidation
 
     static class HttpExtensions
     {
-        public static HttpResponseMessage CreateCompatibleResponse(this HttpRequestMessage req, HttpStatusCode code) => new HttpResponseMessage(code);
+        public static HttpResponseMessage CreateCompatibleResponse(this HttpRequestMessage _, HttpStatusCode code) => new HttpResponseMessage(code);
 
-        public static HttpResponseMessage CreateCompatibleResponse(this HttpRequestMessage req, HttpStatusCode code, string stringContent) => new HttpResponseMessage(code) { Content = new StringContent(stringContent) };
+        public static HttpResponseMessage CreateCompatibleResponse(this HttpRequestMessage _, HttpStatusCode code, string stringContent) => new HttpResponseMessage(code) { Content = new StringContent(stringContent) };
     }
 }

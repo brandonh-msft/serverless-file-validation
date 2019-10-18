@@ -34,7 +34,7 @@ namespace FileValidation
                 return req.CreateCompatibleResponse(HttpStatusCode.NoContent);
             }
 
-            string customerName = newCustomerFile.CustomerName, name = newCustomerFile.Filename, containerName = newCustomerFile.ContainerName;
+            string customerName = newCustomerFile.CustomerName, name = newCustomerFile.Filename;
             starter.Log(log, $@"Processing new file. customer: {customerName}, filename: {name}");
 
             // get the prefix for the name so we can check for others in the same container with in the customer blob storage account
