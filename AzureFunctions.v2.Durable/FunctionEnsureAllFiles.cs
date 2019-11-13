@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
 
 namespace FileValidation
@@ -10,7 +11,11 @@ namespace FileValidation
     public static class FunctionEnsureAllFiles
     {
         [FunctionName("EnsureAllFiles")]
+#if FUNCTIONS_V1
         public static async Task Run([OrchestrationTrigger]DurableOrchestrationContext context, ILogger log)
+#else
+        public static async Task Run([OrchestrationTrigger]IDurableOrchestrationContext context, ILogger log)
+#endif
         {
             if (!context.IsReplaying)
             {

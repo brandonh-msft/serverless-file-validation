@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -13,7 +14,11 @@ namespace FileValidation
     public static class Orchestrator
     {
         [FunctionName("Orchestrator")]
+#if FUNCTIONS_V1
         public static async System.Threading.Tasks.Task<HttpResponseMessage> RunAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage req, [OrchestrationClient]DurableOrchestrationClient starter, ILogger log)
+#else
+        public static async System.Threading.Tasks.Task<HttpResponseMessage> RunAsync([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequestMessage req, [DurableClient]IDurableClient starter, ILogger log)
+#endif
         {
             var inputToFunction = JToken.ReadFrom(new JsonTextReader(new StreamReader(await req.Content.ReadAsStreamAsync())));
             dynamic eventGridSoleItem = (inputToFunction as JArray)?.SingleOrDefault();

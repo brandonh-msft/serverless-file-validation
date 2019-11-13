@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 
@@ -9,7 +10,11 @@ namespace FileValidation
     public static class FunctionValidateFileSet
     {
         [FunctionName(@"ValidateFileSet")]
+#if FUNCTIONS_V1
         public static async Task<bool> Run([ActivityTrigger]DurableActivityContext context, ILogger log)
+#else
+        public static async Task<bool> Run([ActivityTrigger]IDurableActivityContext context, ILogger log)
+#endif
         {
             log.LogTrace(@"ValidateFileSet run.");
             if (!CloudStorageAccount.TryParse(Environment.GetEnvironmentVariable(@"CustomerBlobStorage"), out _))
